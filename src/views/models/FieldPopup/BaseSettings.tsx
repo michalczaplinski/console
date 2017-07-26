@@ -61,7 +61,6 @@ export default class BaseSettings extends React.Component<Props,State> {
       onChangeDescription,
       onChangeName,
       onToggleIsList,
-      enumValues,
       errors,
       showErrors,
     }  = this.props

@@ -13,24 +13,14 @@ interface Props {
   sssModelName: string
   onChangeSSSModel: (e: any) => void
   models: Model[]
+  isBeta: boolean
 }
 
-interface State {
-}
-
-export default class Step0 extends React.Component<Props, State> {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      eventType: null,
-    }
-  }
+export default class Step0 extends React.Component<Props, {}> {
 
   render() {
-    const {eventType, onChangeEventType, sssModelName, onChangeSSSModel, models} = this.props
-    const choices = [
+    const {eventType, onChangeEventType, sssModelName, onChangeSSSModel, models, isBeta} = this.props
+    let choices: Array<JSX.Element | string> = [
       <div className='flex itemsCenter' data-test='choose-sss'>
         <Icon
           src={require('graphcool-styles/icons/fill/serversidesubscriptions.svg')}
@@ -53,29 +43,25 @@ export default class Step0 extends React.Component<Props, State> {
           Request Pipeline
         </div>
       </div>,
-      <Info customTip={
-        <div className='flex itemsCenter' data-test='choose-cron'>
-          <Icon
-            src={require('graphcool-styles/icons/fill/cron.svg')}
-            width={20}
-            height={20}
-            color={$v.darkBlue50}
-          />
-          <div className='ml16'>
-            Cron Job
-          </div>
-        </div>
-      }>
-        <span>
-          <style jsx={true}>{`
-            span {
-              @p: .wsNormal;
-            }
-          `}</style>
-          Cron Jobs will soon be available
-        </span>
-      </Info>,
+      /*
+      */
     ]
+    if (isBeta) {
+      choices.push(
+        <div className='flex itemsCenter' data-test='choose-rp'>
+          <Icon
+            src={require('assets/icons/schema.svg')}
+            width={16}
+            height={16}
+            color={$v.darkBlue30}
+          />
+          <div className='ml10'>
+            Schema Extension
+          </div>
+        </div>,
+)
+    }
+
     return (
       <div className='step0'>
         <style jsx>{`
@@ -100,7 +86,6 @@ export default class Step0 extends React.Component<Props, State> {
           inactiveTextColor={$v.gray30}
           onChange={(index) => onChangeEventType(eventTypes[index])}
           spread
-          disabledIndeces={[2]}
         />
         {eventType === 'SSS' && (
           <div className='flex itemsCenter ml38 mb38'>
@@ -136,7 +121,12 @@ export default class Step0 extends React.Component<Props, State> {
 
     if (eventType === 'SSS') {
       return `Server-side subscriptions give you the ability to react to events like mutations.
-      You could for example send emails everytime a user signs up or use it for logging`
+      You could for example send emails everytime a user signs up or use it for logging.`
+    }
+
+    if (eventType === 'SCHEMA_EXTENSION') {
+      return `With a Schema Extension you can provide custom queries and mutations that are powered by a function
+      that you provide.`
     }
 
     return 'You can’t change the function type after you created the function.'

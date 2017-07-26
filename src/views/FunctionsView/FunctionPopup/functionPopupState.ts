@@ -47,8 +47,26 @@ export function getEmptyFunction(models: Model[], functions: ServerlessFunction[
     isActive: true,
     modelId,
     query: getDefaultSSSQuery(models[0].name),
+    schemaExtension,
   }
 }
+
+const schemaExtension = `type AdditionPayload {
+  sum: Int!
+}
+
+extend type Query {
+  add(a: Int! b: Int!): AdditionPayload
+}
+
+# type AdditionPayload {
+#   sum: Int!
+# }
+#
+# extend type Mutation {
+#   add(a: Int! b: Int!): AdditionPayload
+#}
+`
 
 export function getDefaultSSSQuery(modelName: string) {
   return `\
@@ -77,6 +95,15 @@ module.exports = function (event) {
   console.log(event.data)
 }
 `
+  }
+  if ('SCHEMA_EXTENSION' === eventType) {
+    return `module.exports = function sum(event) {
+  const data = event.data
+
+  const sum = data.a + data.b
+
+  return {data: {sum: sum}}
+}`
   }
   return `\
 // Click "EXAMPLE EVENT" to see whats in \`event\`
@@ -133,9 +160,10 @@ export function updateOperation(
 }
 
 export function updateWebhookUrl(state: ServerlessFunction, webhookUrl: string): ServerlessFunction {
+  const key = state.type === 'WEBHOOK' ? '_webhookUrl' : '_inlineWebhookUrl'
   return {
     ...state,
-    webhookUrl,
+    [key]: webhookUrl,
   }
 }
 
@@ -147,37 +175,42 @@ ServerlessFunction {
   }
 }
 
-export function updateQuery(state: ServerlessFunction, query: string): ServerlessFunction {
-  return {
-    ...state,
-    query,
+export function updateQuery(eventType: EventType, state: ServerlessFunction, query: string): ServerlessFunction {
+  if (eventType === 'SSS') {
+    return {
+      ...state,
+      query,
+    }
   }
+
+  if (eventType === 'SCHEMA_EXTENSION') {
+    return {
+      ...state,
+      schemaExtension: query,
+    }
+  }
+
+  throw new Error('invalid event type for updateQuery function')
 }
-
 export function updateType(state: ServerlessFunction, type: FunctionType): ServerlessFunction {
-  let webhookUrl = state.webhookUrl
-  let _webhookUrl = state._webhookUrl
-  if (type === 'WEBHOOK' && webhookUrl && webhookUrl.includes('auth0')) {
-    _webhookUrl = webhookUrl
-    webhookUrl = ''
-  }
-  if (type === 'AUTH0' && _webhookUrl && _webhookUrl.length > 0) {
-    webhookUrl = _webhookUrl
-  }
-
   return {
     ...state,
     type,
-    webhookUrl,
-    _webhookUrl,
   }
+}
+
+export function getWebhookUrl(state: FunctionPopupState) {
+  if (state.fn.type === 'WEBHOOK') {
+    return state.fn._webhookUrl
+  }
+  return state.fn._inlineWebhookUrl
 }
 
 export function isValid(state: FunctionPopupState) {
   if (state.fn.type === 'AUTH0' && (!state.fn.inlineCode || state.fn.inlineCode.length === 0)) {
     return false
   }
-  if (state.fn.type === 'WEBHOOK' && !webhookUrlValid(state.fn.webhookUrl)) {
+  if (state.fn.type === 'WEBHOOK' && !webhookUrlValid(getWebhookUrl(state))) {
     return false
   }
   if (!state.fn.name || state.fn.name.length === 0) {
@@ -197,7 +230,7 @@ export function didChange(after: ServerlessFunction, isInline: boolean, before?:
   ]
 
   if (!isInline) {
-    keys = keys.concat('webhookUrl')
+    keys = keys.concat('_webhookUrl')
   }
 
   return keysChanged(before, after, keys) || JSON.stringify(after._webhookHeaders) !== before.webhookHeaders

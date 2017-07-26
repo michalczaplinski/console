@@ -9,6 +9,7 @@ import {
   printSchema,
 } from 'graphql'
 import cuid from 'cuid'
+import { typeFakers } from './fake'
 
 const fakerIDL = parse(fakeIDL)
 
@@ -39,7 +40,7 @@ export function getFakeSchema(schema) {
 
 // needs a faked schema
 // fakeSchema(schema)
-export function getExampleEvent(schema, query: string) {
+export function getSSSExampleEvent(schema, query: string) {
   try {
     const queryAst = parse(query)
 
@@ -48,5 +49,50 @@ export function getExampleEvent(schema, query: string) {
     // not empty
   }
 
-  return Promise.reject(null)
+  return Promise.reject(new Error(`Couldn't generate SSS example event`))
+}
+
+export function getCustomMutationExampleEvent(sdl: string) {
+  try {
+    const ast = parse(sdl)
+
+    const data = ast.definitions
+      .find(def => def.kind === 'TypeExtensionDefinition').definition.fields[0].arguments
+      .map(getType)
+      .map(({type, name}) => {
+        const typeFaker = typeFakers[type]
+        let value = ''
+        if (typeFaker) {
+          value = typeFaker.generator(typeFaker.defaultOptions)()
+        } else {
+          value = `<${type.name}>`
+        }
+        return {
+          [name]: value,
+        }
+      })
+      .reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    return {
+      data,
+    }
+  } catch (e) {
+    return {
+      data: {},
+    }
+  }
+}
+
+function getType(inputType) {
+    let type = ''
+    if (inputType.type.kind === 'NonNullType') {
+        type = inputType.type.type.name.value
+    } else {
+        type = inputType.type.name.value
+    }
+
+    return {
+        type: type,
+        name: inputType.name.value,
+    }
 }

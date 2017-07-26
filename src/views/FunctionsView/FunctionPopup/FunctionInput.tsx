@@ -15,9 +15,12 @@ import {CustomGraphiQL} from 'graphcool-graphiql'
 import {getEventInput} from './TestPopup'
 import TestButton from './TestButton'
 import {FunctionType} from '../../../types/types'
-import {getExampleEvent, getFakeSchema} from '../../../utils/example-generation/index'
+import {
+  getSSSExampleEvent, getFakeSchema,
+  getCustomMutationExampleEvent,
+} from '../../../utils/example-generation/index'
 import {throttle} from 'lodash'
-import {generateTestEvent} from '../../../utils/functionTest'
+import {generateRPTestEvent} from '../../../utils/functionTest'
 import {smoothScrollTo} from '../../../utils/smooth'
 import TestLog from './TestLog'
 import DummyTestLog from './DummyTestLog'
@@ -87,7 +90,7 @@ export interface TestError {
   stack: string
 }
 
-class RequestPipelineFunctionInput extends React.Component<Props, State> {
+class FunctionInput extends React.Component<Props, State> {
   private logsRef: any
   private lastQuery: string
   private firstTest: boolean = true
@@ -95,14 +98,24 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
     (fakeSchema: any, query?: string) => {
       const schema = fakeSchema || this.state.fakeSchema
       const subscriptionQuery = query || this.props.query
-      getExampleEvent(schema, subscriptionQuery).then(res => {
+      getSSSExampleEvent(schema, subscriptionQuery).then(res => {
         const exampleEvent = JSON.stringify(res, null, 2)
         if (res) {
           this.setState({exampleEvent} as State)
         }
       })
     },
-    300,
+    1000,
+    {
+      trailing: true,
+    },
+  )
+  private updateCustomMutationExampleEvent = throttle(
+    (query: string) => {
+      const exampleEvent = getCustomMutationExampleEvent(query)
+      this.setState(state => ({...state, exampleEvent: JSON.stringify(exampleEvent, null, 2)}))
+    },
+    1000,
     {
       trailing: true,
     },
@@ -155,6 +168,8 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
       this.fetchSSSchema()
     } else if (this.props.eventType === 'RP') {
       this.updateRPExampleEvent()
+    } else if (this.props.eventType === 'SCHEMA_EXTENSION') {
+      this.updateCustomMutationExampleEvent(this.props.query)
     }
   }
   componentWillReceiveProps(nextProps: Props) {
@@ -166,8 +181,12 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
       this.updateRPExampleEvent()
     }
 
-    if (nextProps.query !== this.props.query) {
+    if (nextProps.query !== this.props.query && nextProps.eventType === 'SSS') {
       this.updateSSSExampleEvent(this.state.fakeSchema, nextProps.query)
+    }
+
+    if (nextProps.query !== this.props.query && nextProps.eventType === 'SCHEMA_EXTENSION') {
+      this.updateCustomMutationExampleEvent(nextProps.query)
     }
 
     if (nextProps.schema !== this.props.schema) {
@@ -176,7 +195,7 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
   }
   updateRPExampleEvent(schema?: string) {
     const newSchema = schema || this.props.schema
-    const exampleEvent = JSON.stringify(generateTestEvent(newSchema), null, 2)
+    const exampleEvent = JSON.stringify(generateRPTestEvent(newSchema), null, 2)
     this.setState({exampleEvent} as State)
   }
   fetchSSSchema() {
@@ -225,6 +244,17 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
 
     return 2
   }
+
+  getInputTitle(): string {
+    switch (this.props.eventType) {
+      case 'RP':
+        return 'Event Type'
+      case 'SSS':
+        return 'Subscription Query'
+      case 'SCHEMA_EXTENSION':
+        return 'Schema Extension SDL'
+    }
+  }
   renderComponent() {
     const {inputWidth, showExample, responses} = this.state
     const {
@@ -232,7 +262,7 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
     } = this.props
     const {onChangeQuery} = this.props
 
-    const inputTitle = eventType === 'RP' ? 'Event Type' : 'Subscription Query'
+    const inputTitle = this.getInputTitle()
     const fullscreen = location.pathname.endsWith('fullscreen')
 
     const baseWidth = fullscreen ? window.innerWidth : 820
@@ -321,7 +351,7 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
             @p: .pt6, .flex, .flexColumn, .flexAuto, .br2, .brRight, .relative;
           }
           .test-button {
-            @p: .absolute, .bottom0, .right0, .mb25, .mr25, .z999;
+            @p: .absolute, .bottom0, .right0, .mb25, .mr25, .z999, .flex, .itemsEnd;
           }
           .body :global(.ReactCodeMirror) {
             width: 100%;
@@ -371,6 +401,16 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
           .close-icon {
             @p: .absolute, .top25, .right25, .pointer;
           }
+          .powered-by {
+            @p: .flexColumn, .itemsCenter, .ma16, .f14, .white30, .noUnderline, .dib, .absolute, .bottom0, .left0, .z3;
+          }
+          .powered-by div {
+            @p: .mb16;
+          }
+          .powered-by img {
+            @p: .o50;
+            width: 120px;
+          }
         `}</style>
         <style jsx global>{`
           .CodeMirror-hints {
@@ -415,20 +455,27 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
                 />
               </div>
             )}
-            {!showExample && eventType === 'SSS' && (
+            {!showExample && (['SSS', 'SCHEMA_EXTENSION'].includes(eventType)) && (
               <div className='sss-editor flexAuto'>
                 <CustomGraphiQL
                   rerenderQuery={true}
                   schema={this.state.ssschema}
                   variables={''}
                   query={this.props.query}
-                  fetcher={() => { return null }}
+                  fetcher={() => { return Promise.resolve() }}
                   disableQueryHeader
                   queryOnly
                   showDocs
                   onEditQuery={onChangeQuery}
+
                 />
               </div>
+            )}
+            {fullscreen && (
+              <a className='powered-by' href='https://auth0.com/Extend/developers' target='_blank'>
+                <div>powered by</div>
+                <img src={require('assets/graphics/auth0-extend.svg')} />
+              </a>
             )}
           </div>
         </ResizableBox>
@@ -438,7 +485,7 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
               {!this.props.editing && (
                 <StepMarker style={{left: -20, top: -1, position: 'relative'}}>
                   {eventType === 'RP' && '2'}
-                  {eventType === 'SSS' && '3'}
+                  {['SSS', 'SCHEMA_EXTENSION'].includes(eventType) && '3'}
                 </StepMarker>
               )}
               <div className='ml10'>
@@ -634,4 +681,4 @@ class RequestPipelineFunctionInput extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(RequestPipelineFunctionInput)
+export default withRouter(FunctionInput)

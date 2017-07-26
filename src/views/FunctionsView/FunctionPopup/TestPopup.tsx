@@ -6,7 +6,7 @@ import TestLog from './TestLog'
 import {FunctionBinding, Log} from '../../../types/types'
 import {smoothScrollTo} from '../../../utils/smooth'
 import DummyTestLog from './DummyTestLog'
-import {generateSSSTestEvent, generateTestEvent} from '../../../utils/functionTest'
+import {generateSSSTestEvent, generateRPTestEvent} from '../../../utils/functionTest'
 import {EventType} from './FunctionPopup'
 import Loading from '../../../components/Loading/Loading'
 import {reverse} from 'lodash'
@@ -89,7 +89,7 @@ export default class TestPopup extends React.Component<Props, State> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (this.props.schema !== nextProps.schema) {
-      this.setState({input: JSON.stringify(generateTestEvent(nextProps.schema), null, 2)} as State)
+      this.setState({input: JSON.stringify(generateRPTestEvent(nextProps.schema), null, 2)} as State)
     }
 
     if (this.props.eventType !== nextProps.eventType) {
@@ -323,7 +323,7 @@ export default class TestPopup extends React.Component<Props, State> {
 export function getEventInput(eventType: EventType, schema: string, sssModelName: string) {
   let inputData
   if (eventType === 'RP') {
-    inputData = generateTestEvent(schema)
+    inputData = generateRPTestEvent(schema)
   } else if (eventType === 'SSS') {
     inputData = generateSSSTestEvent(sssModelName)
   }

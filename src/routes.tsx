@@ -51,8 +51,8 @@ import AllRelationPermissionsList from './views/PermissionsView/RelationPermissi
 import PermissionsList from './views/PermissionsView/PermissionsList/PermissionsList'
 import FunctionsView from './views/FunctionsView/FunctionsView'
 import {
-  CreateFunctionPopup,
-  EditRPFunctionPopup,
+  CreateFunctionPopup, EditCustomQueryFunctionPopup,
+  EditRPFunctionPopup, EditSchemaExtensionFunctionPopup,
   EditSSSFunctionPopup,
 } from './views/FunctionsView/FunctionPopup/FunctionPopup'
 import { FunctionLogs } from './views/FunctionsView/FunctionLogs/FunctionLogs'
@@ -115,20 +115,29 @@ const render = ({error, props, routerProps, element, ...rest}) => {
       tracker.reset()
 
       return (
-        <RedirectOnMount to='/login'/>
+        <RedirectOnMount to={`/login${routerProps.location.search}`} />
+      )
+    }
+
+    // if the project doesn't exist on this account
+    if (err.code === 4033) {
+      graphcoolAlert('The requested project doesn\'t exist on your account.')
+
+      return (
+        <RedirectOnMount to={`/`} />
       )
     }
 
     if (routerProps && routerProps.params.projectName && routerProps.params.modelName) {
       // if we have a model and a project, there might be only a problem with the model, so redirect to project
       return (
-        <RedirectOnMount to={`/${routerProps.params.projectName}`}/>
+        <RedirectOnMount to={`/${routerProps.params.projectName}`} />
       )
     }
 
     return (
       // TODO https://github.com/relay-tools/react-router-relay/issues/156
-      <RedirectOnMount to='/'/>
+      <RedirectOnMount to={`/${routerProps.params.projectName}`} />
     )
   }
 
@@ -204,6 +213,17 @@ export default (
         <Route
           path=':id/rp/edit'
           component={EditRPFunctionPopup}
+          queries={{node: NodeQuery.node, viewer: ViewerQuery.viewer}}
+          render={render}
+        >
+          <Route
+            path='fullscreen'
+            component={null}
+          />
+        </Route>
+        <Route
+          path=':id/schema_extension/edit'
+          component={EditSchemaExtensionFunctionPopup}
           queries={{node: NodeQuery.node, viewer: ViewerQuery.viewer}}
           render={render}
         >

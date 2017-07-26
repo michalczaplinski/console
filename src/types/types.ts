@@ -86,11 +86,13 @@ export interface Project {
 }
 
 export interface ServerlessFunction {
+  __typename?: string
   id: string
   name: string
   type?: FunctionType
   binding?: FunctionBinding
   webhookUrl: string
+  _inlineWebhookUrl?: string
   _webhookUrl?: string
   webhookHeaders: string
   _webhookHeaders?: {[key: string]: string}
@@ -103,6 +105,8 @@ export interface ServerlessFunction {
   operation?: RequestPipelineMutationOperation
   isActive: boolean
   query?: string
+  schema?: string
+  schemaExtension?: string
 }
 
 export interface FunctionStats {

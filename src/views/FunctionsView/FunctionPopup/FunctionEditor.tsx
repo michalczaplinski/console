@@ -1,10 +1,12 @@
 import * as React from 'react'
 import {FunctionBinding, FunctionType, Model, RequestPipelineMutationOperation} from '../../../types/types'
-import RequestPipelineFunctionInput from './RequestPipelineFunctionInput'
+import FunctionInput from './FunctionInput'
 import StepMarker from './StepMarker'
 import {getText} from './data'
 import {EventType} from './FunctionPopup'
 import N from './N'
+import { Button } from '../../../components/Links'
+import { examples } from './examples'
 
 interface Props {
   name: string
@@ -37,7 +39,7 @@ interface State {
 
 }
 
-export default class RequestPipelineFunction extends React.Component<Props, State> {
+export default class FunctionEditor extends React.Component<Props, State> {
 
   constructor(props) {
     super(props)
@@ -82,15 +84,14 @@ export default class RequestPipelineFunction extends React.Component<Props, Stat
           .content {
             @p: .overflowAuto;
           }
-          .powered-by {
-            @p: .absolute, .right0, .bottom0, .ma16, .flexColumn, .itemsCenter, .f14, .darkBlue30, .noUnderline;
+          .examples {
+            @p: .pl38, .pb25;
           }
-          .powered-by div {
-            @p: .mb16;
+          h3 {
+            @p: .darkBlue50, .mb25, .f25, .fw6;
           }
-          .powered-by img {
-            @p: .o50;
-            width: 120px;
+          .examples :global(.button) {
+            @p: .mr25;
           }
         `}</style>
         <input
@@ -132,21 +133,42 @@ export default class RequestPipelineFunction extends React.Component<Props, Stat
               write a function that get’s executed every time.
             </p>
           )}
-          <p className='relative'>
-            The <pre>event</pre> argument represents the payload of the
-            {eventType === 'RP' ? 'mutation' : 'subscription'}. <br/>
-            {eventType === 'RP' && (
-              <span>
-                You can either <pre>return</pre> a value or a <pre>Promise</pre> if you have an async flow.
-              </span>
-            )}
-            <a className='powered-by' href='https://auth0.com/Extend/developers' target='_blank'>
-              <div>powered by</div>
-              <img src={require('assets/graphics/auth0-extend.svg')} />
-            </a>
-          </p>
+          {'SCHEMA_EXTENSION' === eventType && !editing && (
+            <p>
+              To create a schema extension, you need to
+              <N>1</N>
+              define a function name
+              <N>2</N>
+              define the schema sdl that describes the GraphQL API
+              <N>3</N>
+              write a function that get’s executed every time.
+            </p>
+          )}
+          {(eventType === 'RP' || eventType === 'SSS') && (
+            <p className='relative'>
+              The <pre>event</pre> argument represents the payload of the
+              {eventType === 'RP' ? ' mutation' : ' subscription'}. <br/>
+              {eventType === 'RP' && (
+                <span>
+                  You can either <pre>return</pre> a value or a <pre>Promise</pre> if you have an async flow.
+                </span>
+              )}
+            </p>
+          )}
+          {eventType === 'SCHEMA_EXTENSION' && (
+            <div className='examples'>
+              <h3>Examples</h3>
+              <Button white hideArrow onClick={this.selectExample.bind(this, 'weather')}>Weather API</Button>
+              <Button white hideArrow onClick={this.selectExample.bind(this, 'cuid')}>CUID Generator</Button>
+              <Button
+                white
+                hideArrow
+                onClick={this.selectExample.bind(this, 'sendgrid')}
+              >Send Mail with Sendgrid</Button>
+            </div>
+          )}
         </div>
-        <RequestPipelineFunctionInput
+        <FunctionInput
           schema={schema}
           onChange={onInlineCodeChange}
           value={inlineCode}
@@ -169,6 +191,12 @@ export default class RequestPipelineFunction extends React.Component<Props, Stat
         />
       </div>
     )
+  }
+
+  private selectExample = (exampleName: string) => {
+    const example = examples[exampleName]
+    this.props.onChangeQuery(example.sdl)
+    this.props.onInlineCodeChange(example.code)
   }
 
   private nameChange = e => {

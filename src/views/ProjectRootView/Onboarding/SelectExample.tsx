@@ -143,7 +143,7 @@ const examples: Example[] = [
   {
     name: 'React + Relay',
     path: 'react-graphql',
-    subfolder: 'quickstart-with-relay',
+    subfolder: 'quickstart-with-relay-modern',
     logo1: require('graphcool-styles/icons/fill/reactLogo.svg'),
     logo2: require('graphcool-styles/icons/fill/relayLogo.svg'),
   },

@@ -79,6 +79,10 @@
   version "3.0.37"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.0.37.tgz#2e76b394aa9bea40d04241a31c0887a260283388"
 
+"@types/bluebird@^3.5.5":
+  version "3.5.8"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.8.tgz#242a83379f06c90f96acf6d1aeab3af6faebdb98"
+
 "@types/classnames@^0.0.32":
   version "0.0.32"
   resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-0.0.32.tgz#449abcd9a826807811ef101e58df9f83cfc61713"
@@ -90,6 +94,10 @@
 "@types/cuid@0.0.30":
   version "0.0.30"
   resolved "https://registry.yarnpkg.com/@types/cuid/-/cuid-0.0.30.tgz#10afaf53bbaf54a11415234045b95a8d01904f61"
+
+"@types/cuid@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@types/cuid/-/cuid-1.3.0.tgz#20b0e00ca555df564866bc52d2e251bf90c88db7"
 
 "@types/enzyme@^2.7.1":
   version "2.7.2"
@@ -116,6 +124,12 @@
 "@types/lodash@4.14.43":
   version "4.14.43"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.43.tgz#0373de422e70f5bce12c15340103a3c126c81086"
+
+"@types/node-fetch@^1.6.7":
+  version "1.6.7"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-1.6.7.tgz#521078e8f0c69a158e5022005aca92d2620f6d57"
+  dependencies:
+    "@types/node" "*"
 
 "@types/node@*", "@types/node@^6.0.31":
   version "6.0.62"
@@ -200,6 +214,14 @@ abab@^1.0.0:
 abbrev@1, abbrev@1.0.x:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
+
+ably@^1.0.4:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/ably/-/ably-1.0.5.tgz#7b65954ce2850fe2c52e2b207daa5bf07fb7444b"
+  dependencies:
+    msgpack-js "git://github.com/ably-forks/msgpack-js"
+    request "^2.74.0"
+    ws "^1.1.1"
 
 accepts@~1.3.3:
   version "1.3.3"
@@ -1483,6 +1505,10 @@ base16@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/base16/-/base16-1.0.0.tgz#e297f60d7ec1014a7a971a39ebc8a98c0b681e70"
 
+base64-js@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-0.0.2.tgz#024f0f72afa25b75f9c0ee73cd4f55ec1bed9784"
+
 base64-js@>=0.0.4, base64-js@^1.0.2, base64-js@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.2.0.tgz#a39992d723584811982be5e290bb6a53d86700f1"
@@ -1519,6 +1545,10 @@ bluebird@^3.0.0, bluebird@^3.4.6, bluebird@^3.4.7:
   version "3.4.7"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
 
+bluebird@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
+
 blueimp-md5@2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/blueimp-md5/-/blueimp-md5-2.3.1.tgz#992a6737733b9da1edd641550dc3acab2e9cfc5a"
@@ -1536,6 +1566,13 @@ boom@2.x.x:
   resolved "https://registry.yarnpkg.com/boom/-/boom-2.10.1.tgz#39c8918ceff5799f83f9492a848f625add0c766f"
   dependencies:
     hoek "2.x.x"
+
+bops@~0.0.6:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/bops/-/bops-0.0.7.tgz#b4a0a5a839a406454af0fe05a8b91a7a766a54e2"
+  dependencies:
+    base64-js "0.0.2"
+    to-utf8 "0.0.1"
 
 bowser@^1.0.0:
   version "1.6.0"
@@ -1895,22 +1932,28 @@ chokidar@^1.4.2, chokidar@^1.4.3, chokidar@^1.6.0, chokidar@^1.6.1, chokidar@^1.
   optionalDependencies:
     fsevents "^1.0.0"
 
-chrome-remote-interface@^0.23.0:
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/chrome-remote-interface/-/chrome-remote-interface-0.23.2.tgz#f6884b44fb2087c468fcdff8393599da242ab070"
+chrome-remote-interface@^0.24.2:
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/chrome-remote-interface/-/chrome-remote-interface-0.24.2.tgz#43a05440a1fa60b73769e72f3e7892ac11d66eba"
   dependencies:
     commander "2.1.x"
     ws "2.0.x"
 
-chromeless@^0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/chromeless/-/chromeless-0.1.9.tgz#abdd56790abdc9ed78f5d885305914c51ba277e9"
+chromeless@^0.1.34:
+  version "0.1.34"
+  resolved "https://registry.yarnpkg.com/chromeless/-/chromeless-0.1.34.tgz#a079e80d51972d5da3fbdc3605a4955dcd65d5d4"
   dependencies:
     "@types/aws-sdk" "^2.7.0"
+    "@types/bluebird" "^3.5.5"
+    "@types/cuid" "^1.3.0"
+    "@types/node-fetch" "^1.6.7"
+    ably "^1.0.4"
     aws-sdk "^2.65.0"
-    chrome-remote-interface "^0.23.0"
+    bluebird "^3.5.0"
+    chrome-remote-interface "^0.24.2"
+    cuid "^1.3.8"
     form-data "^2.1.4"
-    isomorphic-fetch "^2.2.1"
+    node-fetch "^1.7.1"
 
 ci-info@^1.0.0:
   version "1.0.0"
@@ -5378,11 +5421,11 @@ mime-types@^2.1.12, mime-types@~2.1.11, mime-types@~2.1.13, mime-types@~2.1.7:
   dependencies:
     mime-db "~1.26.0"
 
-mime@1.2.x, mime@^1.2.11:
+mime@1.2.x:
   version "1.2.11"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.2.11.tgz#58203eed86e3a5ef17aed2b7d9ebd47f0a60dd10"
 
-mime@1.3.4, mime@^1.3.4:
+mime@1.3.4, mime@^1.2.11, mime@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
@@ -5431,6 +5474,12 @@ ms@0.7.1:
 ms@0.7.2, ms@^0.7.1:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-0.7.2.tgz#ae25cf2512b3885a1d95d7f037868d8431124765"
+
+"msgpack-js@git://github.com/ably-forks/msgpack-js":
+  version "0.3.2-v5"
+  resolved "git://github.com/ably-forks/msgpack-js#dc33040d70fda1bc3d531d5293cf43394b2faf09"
+  dependencies:
+    bops "~0.0.6"
 
 multimatch@^2.1.0:
   version "2.1.0"
@@ -5535,9 +5584,9 @@ node-emoji@^1.4.1:
   dependencies:
     string.prototype.codepointat "^0.2.0"
 
-node-fetch@^1.0.1, node-fetch@^1.5.2, node-fetch@^1.6.3:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.6.3.tgz#dc234edd6489982d58e8f0db4f695029abcd8c04"
+node-fetch@^1.0.1, node-fetch@^1.5.2, node-fetch@^1.6.3, node-fetch@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-1.7.1.tgz#899cb3d0a3c92f952c47f1b876f4c8aeabd400d5"
   dependencies:
     encoding "^0.1.11"
     is-stream "^1.0.1"
@@ -5891,6 +5940,10 @@ optionator@^0.8.1:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
     wordwrap "~1.0.0"
+
+options@>=0.0.5:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
 
 original@>=0.0.5:
   version "1.0.0"
@@ -6816,11 +6869,11 @@ qs@6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.2.0.tgz#3b7848c03c2dece69a9522b0fae8c4126d745f3b"
 
-qs@^6.0.2, qs@^6.1.0, qs@~6.3.0:
+qs@^6.0.2, qs@~6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.3.0.tgz#f403b264f23bc01228c74131b407f18d5ea5d442"
 
-qs@^6.4.0:
+qs@^6.1.0, qs@^6.4.0:
   version "6.4.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
@@ -7531,7 +7584,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@2, request@^2.55.0, request@^2.61.0, request@^2.79.0:
+request@2, request@^2.55.0, request@^2.61.0, request@^2.74.0, request@^2.79.0:
   version "2.79.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.79.0.tgz#4dfe5bf6be8b8cdc37fcf93e04b65577722710de"
   dependencies:
@@ -8355,6 +8408,10 @@ to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
 
+to-utf8@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/to-utf8/-/to-utf8-0.0.1.tgz#d17aea72ff2fba39b9e43601be7b3ff72e089852"
+
 toggle-selection@^1.0.3:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.5.tgz#726c703de607193a73c32c7df49cd24950fc574f"
@@ -8531,6 +8588,10 @@ uid-number@~0.0.6:
 uid2@0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/uid2/-/uid2-0.0.3.tgz#483126e11774df2f71b8b639dcd799c376162b82"
+
+ultron@1.0.x:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
 
 ultron@~1.1.0:
   version "1.1.0"
@@ -9074,6 +9135,13 @@ ws@2.0.x:
   resolved "https://registry.yarnpkg.com/ws/-/ws-2.0.3.tgz#532fd499c3f7d7d720e543f1f807106cfc57d9cb"
   dependencies:
     ultron "~1.1.0"
+
+ws@^1.1.1:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-1.1.4.tgz#57f40d036832e5f5055662a397c4de76ed66bf61"
+  dependencies:
+    options ">=0.0.5"
+    ultron "1.0.x"
 
 ws@^3.0.0:
   version "3.0.0"

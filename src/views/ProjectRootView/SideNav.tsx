@@ -202,7 +202,7 @@ export class SideNav extends React.PureComponent<Props, State> {
             link={`/${project.name}/schema`}
             iconSrc={require('assets/icons/schema.svg')}
             text='Schema'
-            size={24}
+            size={18}
             active={this.props.location.pathname.includes(`/schema`) && this.props.params.projectName}
             small={!this.props.expanded}
           />

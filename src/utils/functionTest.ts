@@ -16,7 +16,7 @@ export function generateSSSTestEvent(modelName: string) {
   }
 }
 
-export function generateTestEvent(definition) {
+export function generateRPTestEvent(definition) {
   return {
     data: definition ? generateTestData(definition) : {},
     context: {

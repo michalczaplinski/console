@@ -17,12 +17,15 @@ import * as cn from 'classnames'
 import {getIsInline} from './FunctionPopup/FunctionPopup'
 import {getEventTypeFromFunction} from '../../utils/functions'
 import ToggleServerSideSubscriptionFunction from '../../mutations/Functions/ToggleServerSideSubscriptionFunction'
+import ToggleSchemaExtensionFunction from '../../mutations/Functions/ToggleSchemaExtensionFunction'
+import { RelayProp } from 'react-relay'
 
 interface Props {
   fn: ServerlessFunction
   params: any
   router: ReactRouter.InjectedRouter
   showNotification: ShowNotificationCallback
+  relay: RelayProp
 }
 
 interface State {
@@ -152,11 +155,11 @@ class FunctionRow extends React.Component<Props, State> {
             {eventType === 'RP' && (
               <div className={cn(
                 'event-type',
-                {
-                  'rp1': fn.binding === 'TRANSFORM_ARGUMENT',
-                  'rp2': fn.binding === 'PRE_WRITE',
-                  'rp3': fn.binding === 'TRANSFORM_PAYLOAD',
-                },
+                // {
+                //   'rp1': fn.binding === 'TRANSFORM_ARGUMENT',
+                //   'rp2': fn.binding === 'PRE_WRITE',
+                //   'rp3': fn.binding === 'TRANSFORM_PAYLOAD',
+                // },
               )}>
                 <Icon
                   src={require('graphcool-styles/icons/fill/requestpipeline.svg')}
@@ -164,9 +167,13 @@ class FunctionRow extends React.Component<Props, State> {
                   width={55}
                 />
                 <span className='ttu'>Request Pipeline</span>
-                <div className='badge ml10'>{fn.model.name}</div>
-                <span className='darkBlue40 f14'>is</span>
-                <div className='badge ml6'>{fn.operation.toLowerCase()}d</div>
+                {fn.model && (
+                  <div className='flex'>
+                    <div className='badge ml10'>{fn.model.name}</div>
+                    <span className='darkBlue40 f14'>is</span>
+                    <div className='badge ml6'>{fn.operation.toLowerCase()}d</div>
+                  </div>
+                )}
               </div>
             )}
             {eventType === 'SSS' && (
@@ -178,6 +185,17 @@ class FunctionRow extends React.Component<Props, State> {
                   height={23}
                 />
                 <span>Server-side Subscription</span>
+              </div>
+            )}
+            {eventType === 'SCHEMA_EXTENSION' && (
+              <div className='event-type'>
+                <Icon
+                  src={require('assets/icons/schema.svg')}
+                  color={$v.darkBlue50}
+                  width={18}
+                  height={18}
+                />
+                <span>Schema Extension</span>
               </div>
             )}
           </Link>
@@ -232,36 +250,53 @@ class FunctionRow extends React.Component<Props, State> {
         isActive: !state.isActive,
       }
     })
-    if (this.props.fn.binding) {
-      Relay.Store.commitUpdate(
-        new ToggleActiveRequestPipelineMutationFunction({
-          functionId: this.props.fn.id,
-          isActive: !this.props.fn.isActive,
-        }),
-        {
-          onSuccess: () => {
-            console.log('success at toggling')
+    const eventType = getEventTypeFromFunction(this.props.fn)
+    switch (eventType) {
+      case 'RP':
+        return Relay.Store.commitUpdate(
+          new ToggleActiveRequestPipelineMutationFunction({
+            functionId: this.props.fn.id,
+            isActive: !this.props.fn.isActive,
+          }),
+          {
+            onSuccess: () => {
+              console.log('success at toggling')
+            },
+            onFailure: (transaction) => {
+              onFailureShowNotification(transaction, this.props.showNotification)
+            },
           },
-          onFailure: (transaction) => {
-            onFailureShowNotification(transaction, this.props.showNotification)
+        )
+      case 'SSS':
+        return Relay.Store.commitUpdate(
+          new ToggleServerSideSubscriptionFunction({
+            functionId: this.props.fn.id,
+            isActive: !this.props.fn.isActive,
+          }),
+          {
+            onSuccess: () => {
+              console.log('success at toggling')
+            },
+            onFailure: (transaction) => {
+              onFailureShowNotification(transaction, this.props.showNotification)
+            },
           },
-        },
-      )
-    } else {
-      Relay.Store.commitUpdate(
-        new ToggleServerSideSubscriptionFunction({
-          functionId: this.props.fn.id,
-          isActive: !this.props.fn.isActive,
-        }),
-        {
-          onSuccess: () => {
-            console.log('success at toggling')
+        )
+      case 'SCHEMA_EXTENSION':
+        return Relay.Store.commitUpdate(
+          new ToggleSchemaExtensionFunction({
+            functionId: this.props.fn.id,
+            isActive: !this.props.fn.isActive,
+          }),
+          {
+            onSuccess: () => {
+              console.log('success at toggling')
+            },
+            onFailure: (transaction) => {
+              onFailureShowNotification(transaction, this.props.showNotification)
+            },
           },
-          onFailure: (transaction) => {
-            onFailureShowNotification(transaction, this.props.showNotification)
-          },
-        },
-      )
+        )
     }
   }
 }
@@ -272,6 +307,7 @@ export default Relay.createContainer(withRouter(ConnectedFunctionRow), {
   fragments: {
     fn: () => Relay.QL`
       fragment on Function {
+        __typename
         id
         name
         isActive
@@ -283,14 +319,15 @@ export default Relay.createContainer(withRouter(ConnectedFunctionRow), {
           requestCount
           requestHistogram
         }
-        ... on RequestPipelineMutationFunction {
-          binding
-          model {
-            name
-          }
-          operation
-        }
       },
     `,
   },
 })
+// TODO add later when we use relay-modern
+// ... on RequestPipelineMutationFunction @include(if: $includeRP) {
+//   binding
+//   model {
+//     name
+//   }
+//   operation
+// }

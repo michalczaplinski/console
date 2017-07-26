@@ -133,6 +133,10 @@ class ProjectRootView extends React.PureComponent<Props, State> {
       }
       this.checkCliOnboarding()
 
+      if (this.props.location.search.includes('chat') && window && window.Intercom) {
+        Intercom('showNewMessage')
+      }
+
     } else {
       // TODO migrate to tracker
       // analytics.identify({

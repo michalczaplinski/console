@@ -14,6 +14,10 @@ export default class AuthView extends React.Component<Props, {}> {
     const successCallback = async (response: Response) => {
       if ((new Date().getTime() - new Date(response.user.createdAt).getTime()) < 60000) {
         // this is a workaround instead of using the router to re-setup relay
+        let signupSource = 'CONSOLE'
+        if (this.props.location.query && this.props.location.query.email) {
+          signupSource = 'CONSOLE_COLLABORATOR'
+        }
         await fetch(`${__BACKEND_ADDR__}/system`, {
           method: 'POST',
           headers: {
@@ -24,7 +28,7 @@ export default class AuthView extends React.Component<Props, {}> {
             query: `mutation {
               updateCrmCustomerInformation(input: {
                 clientMutationId: "asd"
-                signupSource: CONSOLE
+                signupSource: ${signupSource}
               }) {
                 clientMutationId
               }
@@ -32,10 +36,10 @@ export default class AuthView extends React.Component<Props, {}> {
           }),
         })
 
-        window.location.pathname = '/after-signup'
+        window.location.pathname = `/after-signup${this.props.location.search}`
       } else {
         // this is a workaround instead of using the router to re-setup relay
-        window.location.pathname = '/'
+        window.location.pathname = `/${this.props.location.search}`
       }
     }
 

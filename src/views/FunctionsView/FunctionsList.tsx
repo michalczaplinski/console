@@ -74,7 +74,7 @@ export default Relay.createContainer(FunctionsListMapped, {
     project: () => Relay.QL`
       fragment on Project {
         name
-        functions(first: 100) {
+        functions(first: 1000) {
           edges {
             node {
               id

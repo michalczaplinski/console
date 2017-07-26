@@ -1,3 +1,5 @@
+import * as fetch from 'isomorphic-fetch'
+
 interface Cookie {
   name: string
   value: string
